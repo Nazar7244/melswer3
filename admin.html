@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MELS WEAR — Админ Панель</title>
+  <link href="https://fonts.googleapis.com/css2?family=League+Gothic&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    :root {
+      --electric: #00D9FF;
+      --acid: #B6FF00;
+      --black: #0A0A0A;
+      --dark: #111;
+      --panel: #161616;
+      --border: rgba(255,255,255,0.1);
+      --white: #fff;
+      --green: #22c55e;
+      --yellow: #facc15;
+      --red: #ef4444;
+      --orange: #f97316;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--black); color: var(--white); font-family: 'Manrope', sans-serif; min-height: 100vh; }
+    .font-gothic { font-family: 'League Gothic', sans-serif; text-transform: uppercase; }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at center, rgba(0,217,255,0.05) 0%, transparent 70%);
+    }
+    .login-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 48px 40px;
+      width: 360px;
+    }
+    .login-box h1 { font-family: 'League Gothic', sans-serif; font-size: 36px; color: var(--electric); margin-bottom: 4px; }
+    .login-box p { font-size: 11px; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); margin-bottom: 32px; text-transform: uppercase; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 6px; }
+    .field input {
+      width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      color: white; padding: 12px 14px; font-size: 14px; font-family: 'Manrope', sans-serif;
+      outline: none; transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--electric); }
+    .login-btn {
+      width: 100%; padding: 14px; background: var(--electric); color: #000;
+      border: none; font-family: 'League Gothic', sans-serif; font-size: 20px;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .login-btn:hover { background: var(--acid); }
+    .login-err { color: #ff6666; font-size: 12px; margin-top: 10px; display: none; }
+
+    /* ── ADMIN LAYOUT ── */
+    #admin-screen { display: none; }
+    .admin-header {
+      height: 60px; background: rgba(10,10,10,0.95);
+      border-bottom: 2px solid var(--white);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: sticky; top: 0; z-index: 100;
+    }
+    .admin-header-title { font-family: 'League Gothic', sans-serif; font-size: 22px; letter-spacing: 0.15em; color: var(--electric); }
+    .logout-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); padding: 6px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s; }
+    .logout-btn:hover { border-color: #ff4444; color: #ff4444; }
+
+    .admin-nav {
+      display: flex; gap: 0;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .admin-tab {
+      padding: 12px 20px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; border: none;
+      background: transparent; color: rgba(255,255,255,0.4);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all 0.15s; margin-bottom: -1px;
+    }
+    .admin-tab.active { color: var(--electric); border-bottom-color: var(--electric); }
+    .admin-tab:hover:not(.active) { color: white; }
+
+    .admin-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+    /* ── STATS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--panel); border: 1px solid var(--border);
+      padding: 24px; text-align: center;
+    }
+    .stat-card .s-num { font-family: 'League Gothic', sans-serif; font-size: 48px; color: var(--electric); line-height: 1; }
+    .stat-card .s-label { font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-top: 6px; }
+    .stat-card .s-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+    /* ── ORDERS TABLE ── */
+    .section-title {
+      font-family: 'League Gothic', sans-serif; font-size: 28px; color: white;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+    }
+    .order-filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 6px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      border: 1px solid var(--border); background: transparent; color: rgba(255,255,255,0.4);
+      cursor: pointer; text-transform: uppercase; transition: all 0.15s;
+    }
+    .filter-btn.active { border-color: var(--electric); color: var(--electric); background: rgba(0,217,255,0.06); }
+    .filter-btn:hover:not(.active) { border-color: rgba(255,255,255,0.3); color: white; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left; padding: 10px 12px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.35); text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody td { padding: 12px 12px; font-size: 13px; color: rgba(255,255,255,0.8); vertical-align: top; }
+
+    .status-badge {
+      display: inline-block; padding: 3px 10px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border-radius: 2px;
+    }
+    .status-new      { background: rgba(0,217,255,0.15); color: var(--electric); border: 1px solid rgba(0,217,255,0.3); }
+    .status-process  { background: rgba(250,204,21,0.15); color: var(--yellow); border: 1px solid rgba(250,204,21,0.3); }
+    .status-done     { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .status-cancel   { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+    .status-select {
+      background: #1a1a1a; border: 1px solid var(--border); color: white;
+      padding: 4px 8px; font-size: 11px; cursor: pointer; outline: none;
+    }
+    .status-select option { background: #222; }
+
+    .items-list { font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+    .order-total { font-family: 'League Gothic', sans-serif; font-size: 20px; color: var(--electric); }
+
+    .del-order-btn { background: none; border: none; color: rgba(255,255,255,0.2); cursor: pointer; padding: 4px; font-size: 16px; transition: color 0.15s; }
+    .del-order-btn:hover { color: var(--red); }
+
+    /* ── PRODUCTS ── */
+    .add-product-form {
+      background: var(--panel); border: 1px solid var(--border);
+      padding: 24px; margin-bottom: 24px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+    .f-group { display: flex; flex-direction: column; gap: 6px; }
+    .f-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+    .f-input {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      color: white; padding: 10px 12px; font-size: 13px;
+      font-family: 'Manrope', sans-serif; outline: none; transition: border-color 0.2s;
+    }
+    .f-input:focus { border-color: var(--electric); }
+    .f-select {
+      background: #161616; border: 1px solid var(--border); color: white;
+      padding: 10px 12px; font-size: 13px; cursor: pointer; outline: none;
+    }
+    .save-prod-btn {
+      background: var(--electric); color: #000; border: none;
+      padding: 12px 28px; font-family: 'League Gothic', sans-serif;
+      font-size: 18px; letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .save-prod-btn:hover { background: var(--acid); }
+
+    .prod-table-img { width: 40px; height: 40px; background: #1a1a1a; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(255,255,255,0.3); overflow: hidden; }
+    .prod-table-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .edit-btn { background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s; }
+    .edit-btn:hover { border-color: var(--electric); color: var(--electric); }
+    .del-btn { background: none; border: none; color: rgba(255,255,255,0.2); cursor: pointer; padding: 4px; font-size: 18px; transition: color 0.15s; margin-left: 6px; }
+    .del-btn:hover { color: var(--red); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.2); font-size: 14px; }
+
+    /* toast */
+    .a-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--electric); color: #000;
+      padding: 10px 24px; font-weight: 700; font-size: 12px; letter-spacing: 0.08em;
+      transition: transform 0.3s; z-index: 999; white-space: nowrap;
+    }
+    .a-toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .form-row, .form-row.three { grid-template-columns: 1fr; }
+      .admin-content { padding: 12px; }
+      table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>MELS WEAR</h1>
+    <p>Админ Панель</p>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="l-email" placeholder="admin@melswear.kz" autocomplete="email"/>
+    </div>
+    <div class="field">
+      <label>Пароль</label>
+      <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">КІРУ →</button>
+    <div class="login-err" id="login-err">Қате пароль немесе email</div>
+  </div>
+</div>
+
+<!-- ── ADMIN ── -->
+<div id="admin-screen">
+  <header class="admin-header">
+    <div class="admin-header-title">MELS WEAR ADMIN</div>
+    <button class="logout-btn" onclick="doLogout()">
+      <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">logout</span> ШЫҒУ
+    </button>
+  </header>
+
+  <nav class="admin-nav">
+    <button class="admin-tab active" onclick="showTab('stats',this)">
+      <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">bar_chart</span> СТАТИСТИКА
+    </button>
+    <button class="admin-tab" onclick="showTab('orders',this)">
+      <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">receipt_long</span> ТАПСЫРЫСТАР
+    </button>
+    <button class="admin-tab" onclick="showTab('products',this)">
+      <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">checkroom</span> ТАУАРЛАР
+    </button>
+  </nav>
+
+  <div class="admin-content">
+
+    <!-- STATS TAB -->
+    <div id="tab-stats">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="section-title">Соңғы тапсырыстар</div>
+      <div id="recent-orders-wrap"></div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div id="tab-orders" style="display:none">
+      <div class="section-title">
+        Тапсырыстар
+        <button onclick="clearAllOrders()" style="font-size:11px;background:none;border:1px solid rgba(255,100,100,0.3);color:rgba(255,100,100,0.6);padding:4px 10px;cursor:pointer;letter-spacing:0.06em;font-weight:700;margin-left:auto">БАРЛЫҒЫН ӨШУ</button>
+      </div>
+      <div class="order-filters">
+        <button class="filter-btn active" data-status="all" onclick="filterOrders(this)">БАРЛЫҒЫ</button>
+        <button class="filter-btn" data-status="new" onclick="filterOrders(this)">ЖАҢА</button>
+        <button class="filter-btn" data-status="process" onclick="filterOrders(this)">ӨҢДЕУДЕ</button>
+        <button class="filter-btn" data-status="done" onclick="filterOrders(this)">ОРЫНДАЛДЫ</button>
+        <button class="filter-btn" data-status="cancel" onclick="filterOrders(this)">БАС ТАРТЫЛДЫ</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Күні</th><th>Клиент</th><th>Тауарлар</th>
+              <th>Сумма</th><th>Төлем</th><th>Мәртебе</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody"></tbody>
+        </table>
+        <div id="orders-empty" class="empty-state" style="display:none">Тапсырыс жоқ</div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS TAB -->
+    <div id="tab-products" style="display:none">
+      <div class="section-title">Тауар қосу / өңдеу</div>
+
+      <!-- Add form -->
+      <div class="add-product-form">
+        <input type="hidden" id="edit-prod-id"/>
+        <div class="form-row">
+          <div class="f-group">
+            <label class="f-label">Атауы *</label>
+            <input class="f-input" id="p-name" type="text" placeholder="ARCHIVE TEE v1.0"/>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Баға (₸) *</label>
+            <input class="f-input" id="p-price" type="number" placeholder="18000"/>
+          </div>
+        </div>
+        <div class="form-row three">
+          <div class="f-group">
+            <label class="f-label">Категория</label>
+            <select class="f-select" id="p-cat">
+              <option value="tshirt">Футболка</option>
+              <option value="hoodie">Худи</option>
+              <option value="sweatshirt">Свитшот</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Белгі (badge)</label>
+            <input class="f-input" id="p-badge" type="text" placeholder="NEW, RESTOCK..."/>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Өлшемдер (үтірмен)</label>
+            <input class="f-input" id="p-sizes" type="text" placeholder="S,M,L,XL"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="f-group">
+            <label class="f-label">Фото URL</label>
+            <input class="f-input" id="p-img" type="text" placeholder="https://..."/>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Сипаттама</label>
+            <input class="f-input" id="p-desc" type="text" placeholder="Авторлық дизайн..."/>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:4px">
+          <button class="save-prod-btn" onclick="saveProduct()">САҚТАУ</button>
+          <button onclick="resetProdForm()" style="background:none;border:1px solid var(--border);color:rgba(255,255,255,0.4);padding:12px 20px;font-size:12px;font-weight:700;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase">БОЛДЫРМАУ</button>
+        </div>
+      </div>
+
+      <!-- Products table -->
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr><th>Фото</th><th>Атауы</th><th>Баға</th><th>Категория</th><th>Белгі</th><th>Өлшемдер</th><th></th></tr>
+          </thead>
+          <tbody id="products-tbody"></tbody>
+        </table>
+        <div id="products-empty" class="empty-state" style="display:none">Тауар жоқ</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="a-toast" id="a-toast"></div>
+
+<script>
+/* ── CONFIG ── */
+const ADMIN_EMAIL = 'admin@melswear.kz';
+const ADMIN_PASS  = 'mels2024';
+
+/* ── AUTH ── */
+function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const err   = document.getElementById('login-err');
+  if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+    sessionStorage.setItem('mw_admin', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    initAdmin();
+  } else {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 2500);
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('mw_admin');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-screen').style.display = 'none';
+}
+
+document.getElementById('l-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// Auto-login if session exists
+if (sessionStorage.getItem('mw_admin') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  document.addEventListener('DOMContentLoaded', initAdmin);
+}
+
+/* ── TAB NAVIGATION ── */
+function showTab(tab, btn) {
+  ['stats','orders','products'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = 'none';
+  });
+  document.getElementById('tab-' + tab).style.display = 'block';
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'stats')    renderStats();
+  if (tab === 'orders')   renderOrders();
+  if (tab === 'products') renderProducts();
+}
+
+/* ── INIT ── */
+function initAdmin() {
+  renderStats();
+  renderOrders();
+  renderProducts();
+}
+
+/* ── HELPERS ── */
+function getOrders() {
+  try { return JSON.parse(localStorage.getItem('mw_orders') || '[]'); } catch { return []; }
+}
+function saveOrders(orders) {
+  try { localStorage.setItem('mw_orders', JSON.stringify(orders)); } catch(e) {}
+}
+function getAdminProducts() {
+  try {
+    const stored = localStorage.getItem('mw_admin_products');
+    return stored ? JSON.parse(stored) : getDefaultProducts();
+  } catch { return getDefaultProducts(); }
+}
+function saveAdminProducts(p) {
+  try { localStorage.setItem('mw_admin_products', JSON.stringify(p)); } catch(e) {}
+}
+function getDefaultProducts() {
+  return [
+    { id:"tee1", name:"ARCHIVE TEE v1.0", price:18000, category:"tshirt", sizes:["S","M","L","XL"], badge:"NEW", img:"", desc:"Базалық оверсайз футболка. Қою мата, 240 г/м²" },
+    { id:"hoodie1", name:"VOID HOODIE", price:32000, category:"hoodie", sizes:["S","M","L","XL","XXL"], badge:"", img:"", desc:"Ауыр худи. Кенгуру қалта, капюшон бауымен" },
+    { id:"tee2", name:"GLITCH TEE", price:18000, category:"tshirt", sizes:["S","M","L","XL"], badge:"RESTOCK", img:"", desc:"Глитч графика. DTF басып шығару" },
+    { id:"sweat1", name:"STATIC SWEATSHIRT", price:22000, category:"sweatshirt", sizes:["S","M","L","XL"], badge:"", img:"", desc:"Ауыр свитшот. Минималистік дизайн" },
+    { id:"hoodie2", name:"HEAVY HOODIE", price:25000, category:"hoodie", sizes:["S","M","L","XL","XXL"], badge:"", img:"", desc:"Жоғары сапалы худи. 320 г/м²" },
+    { id:"tee3", name:"CHAOS TEE", price:15000, category:"tshirt", sizes:["S","M","L","XL"], badge:"", img:"", desc:"Урбан стиль. Экспресс жеткізу" },
+    { id:"tee4", name:"GEOMETRY TEE", price:15000, category:"tshirt", sizes:["S","M","L","XL"], badge:"", img:"", desc:"Геометриялық принт. Таза мата" },
+    { id:"sweat2", name:"VOID SWEATSHIRT", price:24000, category:"sweatshirt", sizes:["M","L","XL"], badge:"NEW", img:"", desc:"Қара свитшот. Минимал дизайн" },
+    { id:"hoodie3", name:"CHAOS HOODIE", price:28000, category:"hoodie", sizes:["S","M","L","XL"], badge:"", img:"", desc:"Күшті графика, ауыр капюшон" }
+  ];
+}
+
+function aToast(msg, color) {
+  const t = document.getElementById('a-toast');
+  t.textContent = msg;
+  t.style.background = color || 'var(--electric)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function statusLabel(s) {
+  const map = { new:'ЖАҢА', process:'ӨҢДЕУДЕ', done:'ОРЫНДАЛДЫ', cancel:'БАС ТАРТЫЛДЫ' };
+  return map[s] || s;
+}
+function statusClass(s) {
+  return 'status-' + (s || 'new');
+}
+
+const CAT_NAMES = { tshirt:'Футболка', hoodie:'Худи', sweatshirt:'Свитшот' };
+
+/* ── STATS ── */
+function renderStats() {
+  const orders = getOrders();
+  const today  = new Date().toLocaleDateString('ru-KZ');
+  const todayOrders = orders.filter(o => o.date && o.date.startsWith(today.split('.').reverse().join('.')));
+  const monthRevenue = orders
+    .filter(o => o.status !== 'cancel')
+    .reduce((s,o) => s + (o.total||0), 0);
+  const products = getAdminProducts();
+
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = `
+    <div class="stat-card">
+      <div class="s-num">${orders.length}</div>
+      <div class="s-label">Барлық тапсырыс</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-num">${todayOrders.length}</div>
+      <div class="s-label">Бүгін</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-num" style="font-size:32px">${monthRevenue.toLocaleString('ru')} ₸</div>
+      <div class="s-label">Жалпы кіріс</div>
+    </div>
+    <div class="stat-card">
+      <div class="s-num">${products.length}</div>
+      <div class="s-label">Тауар саны</div>
+    </div>
+  `;
+
+  const recentWrap = document.getElementById('recent-orders-wrap');
+  const recent = orders.slice(0, 5);
+  if (!recent.length) {
+    recentWrap.innerHTML = '<div class="empty-state">Тапсырыс жоқ</div>';
+    return;
+  }
+  recentWrap.innerHTML = `
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Күні</th><th>Клиент</th><th>Сумма</th><th>Мәртебе</th></tr></thead>
+        <tbody>
+          ${recent.map(o => `
+            <tr>
+              <td style="color:rgba(255,255,255,0.4);font-size:12px">${o.date||'—'}</td>
+              <td><b>${o.name||'—'}</b><br/><span style="color:rgba(255,255,255,0.4);font-size:11px">${o.phone||''}</span></td>
+              <td class="order-total">${(o.total||0).toLocaleString('ru')} ₸</td>
+              <td><span class="status-badge ${statusClass(o.status)}">${statusLabel(o.status)}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ── ORDERS ── */
+let currentOrderFilter = 'all';
+
+function filterOrders(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentOrderFilter = btn.dataset.status;
+  renderOrders();
+}
+
+function renderOrders() {
+  const orders = getOrders();
+  const filtered = currentOrderFilter === 'all'
+    ? orders
+    : orders.filter(o => o.status === currentOrderFilter);
+
+  const tbody = document.getElementById('orders-tbody');
+  const empty = document.getElementById('orders-empty');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map((o, i) => `
+    <tr>
+      <td style="color:rgba(255,255,255,0.3);font-size:11px">#${o.id || (orders.length - i)}</td>
+      <td style="font-size:11px;color:rgba(255,255,255,0.4)">${o.date||'—'}</td>
+      <td>
+        <b>${o.name||'—'}</b>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4)">${o.phone||''}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.3)">${o.city||''}</div>
+      </td>
+      <td class="items-list">
+        ${(o.items||[]).map(it => `${it.name} ${it.size?'('+it.size+')':''} ×${it.qty||1}`).join('<br/>')}
+      </td>
+      <td class="order-total">${(o.total||0).toLocaleString('ru')} ₸</td>
+      <td style="font-size:11px;color:rgba(255,255,255,0.5)">${o.payment||'Kaspi'}</td>
+      <td>
+        <select class="status-select" onchange="changeOrderStatus(${o.id}, this.value)">
+          <option value="new"     ${o.status==='new'?'selected':''}>Жаңа</option>
+          <option value="process" ${o.status==='process'?'selected':''}>Өңдеуде</option>
+          <option value="done"    ${o.status==='done'?'selected':''}>Орындалды</option>
+          <option value="cancel"  ${o.status==='cancel'?'selected':''}>Бас тартылды</option>
+        </select>
+      </td>
+      <td>
+        <button class="del-order-btn" onclick="deleteOrder(${o.id})" title="Өшіру">
+          <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function changeOrderStatus(id, status) {
+  const orders = getOrders();
+  const order = orders.find(o => o.id === id);
+  if (order) {
+    order.status = status;
+    saveOrders(orders);
+    aToast('✅ Мәртебе жаңартылды');
+    renderStats();
+  }
+}
+
+function deleteOrder(id) {
+  if (!confirm('Тапсырысты өшіресіз бе?')) return;
+  const orders = getOrders().filter(o => o.id !== id);
+  saveOrders(orders);
+  renderOrders();
+  renderStats();
+  aToast('🗑 Тапсырыс өшірілді', '#ef4444');
+}
+
+function clearAllOrders() {
+  if (!confirm('Барлық тапсырысты өшіресіз бе?')) return;
+  localStorage.removeItem('mw_orders');
+  renderOrders();
+  renderStats();
+  aToast('🗑 Барлық тапсырыс өшірілді', '#ef4444');
+}
+
+/* ── PRODUCTS ── */
+function renderProducts() {
+  const products = getAdminProducts();
+  const tbody = document.getElementById('products-tbody');
+  const empty = document.getElementById('products-empty');
+
+  if (!products.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = products.map(p => `
+    <tr>
+      <td>
+        <div class="prod-table-img">
+          ${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'"/>` : '<span class="material-symbols-outlined" style="font-size:18px">checkroom</span>'}
+        </div>
+      </td>
+      <td><b>${p.name}</b><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px">${p.desc||''}</div></td>
+      <td style="font-family:'League Gothic',sans-serif;font-size:20px;color:var(--electric)">${(p.price||0).toLocaleString('ru')} ₸</td>
+      <td style="font-size:12px;color:rgba(255,255,255,0.5)">${CAT_NAMES[p.category]||p.category}</td>
+      <td>${p.badge ? `<span class="status-badge status-new">${p.badge}</span>` : '—'}</td>
+      <td style="font-size:11px;color:rgba(255,255,255,0.5)">${(p.sizes||[]).join(', ')}</td>
+      <td>
+        <button class="edit-btn" onclick="editProduct('${p.id}')">ӨҢДЕУ</button>
+        <button class="del-btn" onclick="deleteProduct('${p.id}')">
+          <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function saveProduct() {
+  const name  = document.getElementById('p-name').value.trim();
+  const price = parseInt(document.getElementById('p-price').value) || 0;
+  if (!name || !price) { aToast('⚠️ Атауы мен бағаны толтырыңыз', '#ef4444'); return; }
+
+  const id     = document.getElementById('edit-prod-id').value || 'prod_' + Date.now();
+  const cat    = document.getElementById('p-cat').value;
+  const badge  = document.getElementById('p-badge').value.trim().toUpperCase();
+  const sizesRaw = document.getElementById('p-sizes').value.trim();
+  const sizes  = sizesRaw ? sizesRaw.split(',').map(s => s.trim().toUpperCase()).filter(Boolean) : ['S','M','L','XL'];
+  const img    = document.getElementById('p-img').value.trim();
+  const desc   = document.getElementById('p-desc').value.trim();
+
+  const products = getAdminProducts();
+  const existing = products.findIndex(p => p.id === id);
+
+  const prod = { id, name, price, category: cat, sizes, badge, img, desc };
+
+  if (existing >= 0) {
+    products[existing] = prod;
+    aToast('✅ Тауар жаңартылды');
+  } else {
+    products.unshift(prod);
+    aToast('✅ Тауар қосылды');
+  }
+
+  saveAdminProducts(products);
+  resetProdForm();
+  renderProducts();
+  renderStats();
+}
+
+function editProduct(id) {
+  const products = getAdminProducts();
+  const p = products.find(pr => pr.id === id);
+  if (!p) return;
+  document.getElementById('edit-prod-id').value = p.id;
+  document.getElementById('p-name').value  = p.name;
+  document.getElementById('p-price').value = p.price;
+  document.getElementById('p-cat').value   = p.category;
+  document.getElementById('p-badge').value = p.badge || '';
+  document.getElementById('p-sizes').value = (p.sizes||[]).join(',');
+  document.getElementById('p-img').value   = p.img || '';
+  document.getElementById('p-desc').value  = p.desc || '';
+  document.querySelector('.add-product-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteProduct(id) {
+  if (!confirm('Тауарды өшіресіз бе?')) return;
+  const products = getAdminProducts().filter(p => p.id !== id);
+  saveAdminProducts(products);
+  renderProducts();
+  renderStats();
+  aToast('🗑 Тауар өшірілді', '#ef4444');
+}
+
+function resetProdForm() {
+  ['edit-prod-id','p-name','p-price','p-badge','p-sizes','p-img','p-desc'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('p-cat').value = 'tshirt';
+  document.getElementById('p-sizes').value = 'S,M,L,XL';
+}
+
+// Default sizes
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('p-sizes').value = 'S,M,L,XL';
+  if (sessionStorage.getItem('mw_admin') === '1') initAdmin();
+});
+</script>
+</body>
+</html>

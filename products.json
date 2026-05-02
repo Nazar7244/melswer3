@@ -1,0 +1,138 @@
+[
+  {
+    "id": "tee1",
+    "name": "ARCHIVE TEE v1.0",
+    "price": 18000,
+    "category": "tshirt",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "NEW",
+    "img": "",
+    "desc": "Базалық оверсайз футболка. Қою мата, 240 г/м²"
+  },
+  {
+    "id": "hoodie1",
+    "name": "VOID HOODIE",
+    "price": 32000,
+    "category": "hoodie",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "badge": "",
+    "img": "",
+    "desc": "Ауыр худи. Кенгуру қалта, капюшон бауымен"
+  },
+  {
+    "id": "tee2",
+    "name": "GLITCH TEE",
+    "price": 18000,
+    "category": "tshirt",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "RESTOCK",
+    "img": "",
+    "desc": "Глитч графика. DTF басып шығару"
+  },
+  {
+    "id": "sweat1",
+    "name": "STATIC SWEATSHIRT",
+    "price": 22000,
+    "category": "sweatshirt",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "",
+    "img": "",
+    "desc": "Ауыр свитшот. Минималистік дизайн"
+  },
+  {
+    "id": "hoodie2",
+    "name": "HEAVY HOODIE",
+    "price": 25000,
+    "category": "hoodie",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "badge": "",
+    "img": "",
+    "desc": "Жоғары сапалы худи. 320 г/м²"
+  },
+  {
+    "id": "tee3",
+    "name": "CHAOS TEE",
+    "price": 15000,
+    "category": "tshirt",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "",
+    "img": "",
+    "desc": "Урбан стиль. Экспресс жеткізу"
+  },
+  {
+    "id": "tee4",
+    "name": "GEOMETRY TEE",
+    "price": 15000,
+    "category": "tshirt",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "",
+    "img": "",
+    "desc": "Геометриялық принт. Таза мата"
+  },
+  {
+    "id": "sweat2",
+    "name": "VOID SWEATSHIRT",
+    "price": 24000,
+    "category": "sweatshirt",
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "NEW",
+    "img": "",
+    "desc": "Қара свитшот. Минимал дизайн"
+  },
+  {
+    "id": "hoodie3",
+    "name": "CHAOS HOODIE",
+    "price": 28000,
+    "category": "hoodie",
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "badge": "",
+    "img": "",
+    "desc": "Күшті графика, ауыр капюшон"
+  }
+]
