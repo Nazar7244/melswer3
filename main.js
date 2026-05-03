@@ -671,7 +671,7 @@ function activateLine(id, trigId) {
 }
 activateLine('hits-line', '#hits-section');
 activateLine('promo-line', '#promo-line');
-activateLine('cons-line', '#constructor-section');
+// activateLine('cons-line', '#constructor-section'); // removed — element not in DOM
 
 function animCounter(id, target, suffix = '') {
   ScrollTrigger.create({
